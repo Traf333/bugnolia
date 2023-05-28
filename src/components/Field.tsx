@@ -1,5 +1,5 @@
-import { Bug, buildHeader } from '../utils/field.ts';
-import { group } from '../utils/collection.ts';
+import { Bug, buildHeader } from '../utils/field';
+import { group } from '../utils/collection';
 
 type Props = {
   size: number;

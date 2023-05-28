@@ -1,3 +1,5 @@
+import { ALPHABET, BUG_LENGTH } from './constants.ts';
+
 type BugGenerationArgs = {
   bugsSeed: {
     big?: number;
@@ -15,12 +17,7 @@ export type Bug = {
   shape: string[];
 }
 
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const BUG_LENGTH = {
-  big: 5,
-  medium: 4,
-  small: 3,
-};
+
 
 function nTimesDo(n: number) {
   return Array.from(Array(n));

@@ -1,5 +1,5 @@
-import { generateBugs, generateCells } from '../utils/field.ts';
-import { Field } from './Field.tsx';
+import { generateBugs, generateCells } from '../utils/field';
+import { Field } from './Field';
 
 const gameTypes = {
   quick: {
@@ -8,7 +8,7 @@ const gameTypes = {
     medium: 1,
     small: 2,
   },
-  medium: {
+  normal: {
     fieldSize: 10,
     big: 1,
     medium: 2,
@@ -17,8 +17,8 @@ const gameTypes = {
   long: {
     fieldSize: 16,
     big: 2,
-    medium: 3,
-    small: 4,
+    medium: 4,
+    small: 5,
   },
 } as const;
 
