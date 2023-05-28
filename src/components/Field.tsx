@@ -1,23 +1,52 @@
 import { Bug, buildHeader } from '../utils/field';
-import { group } from '../utils/collection';
+import { group, random } from '../utils/collection';
+import { useEffect, useState } from 'react';
+import { FieldCell } from './FieldCell.tsx';
 
 type Props = {
   size: number;
-  cells: string[];
+  cells: Record<string, boolean>;
   bugs: Bug[]
   owner?: boolean;
 }
 
 
-export function Field({ size, owner, cells, bugs }: Props) {
 
+
+export function Field({ size, owner, cells, bugs }: Props) {
+  const [revealedCells, setRevealedCells] = useState<string[]>([]);
   const header = buildHeader(size);
-  const groupedCells = group([...cells], size);
+  const groupedCells = group(Object.keys(cells), size);
 
   const withinBug = (cell: string) => bugs.some((bug) => bug.shape.includes(cell));
+  const handleComputerAction = (event: CustomEvent) => {
+    setRevealedCells([...revealedCells, event.detail]);
+  };
+  const handleClick = (cell: string) => {
+    if (owner || revealedCells.includes(cell)) return;
+
+    setRevealedCells([...revealedCells, cell]);
+
+    // if you've missed, the computer action will be triggered
+    if (!withinBug(cell)) {
+      const randomCell = random(Object.keys(cells).filter((c) => !revealedCells.includes(c)));
+      const event = new CustomEvent('computer-action', { detail: randomCell });
+      window.document.dispatchEvent(event);
+    }
+  };
+
+  useEffect(() => {
+    if (!owner) return;
+    window.document.addEventListener('computer-action', handleComputerAction);
+
+    return () => {
+      window.document.removeEventListener('computer-action', handleComputerAction);
+    };
+  }, [revealedCells]);
+
 
   return (
-    <table className="">
+    <table className="select-none">
       <thead>
         <tr>
           <td />
@@ -29,14 +58,14 @@ export function Field({ size, owner, cells, bugs }: Props) {
           <tr key={i}>
             <td>{i + 1}</td>
             {row.map((cell) => (
-              <td
+              <FieldCell
                 key={cell}
-                className="h-8 w-8 bg-emerald-500 text-transparent hover:bg-emerald-700 hover:text-white border cursor-pointer"
-              >
-                {withinBug(cell) && (
-                  <div className="bg-red-600 rounded-full h-full leading-7">{cell}</div>
-                )}
-              </td>
+                onClick={() => handleClick(cell)}
+                withBug={withinBug(cell)}
+                cell={cell}
+                revealed={revealedCells.includes(cell)}
+                owner={owner}
+              />
             ))}
           </tr>
         ))}
