@@ -1,4 +1,5 @@
 import { ALPHABET, BUG_LENGTH } from './constants.ts';
+import { random } from './collection.ts';
 
 type BugGenerationArgs = {
   bugsSeed: {
@@ -29,18 +30,13 @@ export function buildHeader(size: number) {
 }
 
 export function generateCells(size: number) {
-  const cells = [];
+  const cells: Record<string, boolean> = {};
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
-      cells.push(`${ALPHABET[j]}${i + 1}`);
+      cells[`${ALPHABET[j]}${i + 1}`] = false;
     }
   }
   return cells;
-}
-
-
-function random<T>(collection: T[]): T {
-  return collection.sort(() => 0.5 - Math.random())[0];
 }
 
 function findPossibleCells(cell: string, size: number) {
@@ -132,7 +128,7 @@ function shapeWithOffset(shape: string[], size: number) {
 
 export function generateBugs({ bugsSeed, possibleCells, fieldSize }: BugGenerationArgs): Bug[] {
   const bugs: Bug[] = [];
-  let availableCells = [...possibleCells];
+  let availableCells = Object.keys(possibleCells);
 
   Object.entries(bugsSeed).forEach(([type, size]) => {
     nTimesDo(size).forEach(() => {

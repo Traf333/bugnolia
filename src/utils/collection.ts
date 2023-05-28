@@ -4,4 +4,6 @@ export function group<T extends any[]>(collection: T, size: number): T[] {
     , []);
 }
 
-
+export function random<T>(collection: T[]): T {
+  return collection.sort(() => 0.5 - Math.random())[0];
+}
