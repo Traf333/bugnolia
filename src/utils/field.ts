@@ -18,12 +18,9 @@ export type Bug = {
   shape: string[];
 }
 
-
-
 function nTimesDo(n: number) {
   return Array.from(Array(n));
 }
-
 
 export function buildHeader(size: number) {
   return nTimesDo(size).map((_, i) => ALPHABET[i]);
@@ -94,7 +91,7 @@ export function buildBug(size: number, bounds: string[], fieldSize: number) {
   return shape;
 }
 
-function shapeWithOffset(shape: string[], size: number) {
+export function shapeWithOffset(shape: string[], size: number) {
   const rowChars = nTimesDo(size).map((_, i) => (i + 1).toString());
 
   const result: string[] = [];
