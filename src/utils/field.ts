@@ -18,12 +18,9 @@ export type Bug = {
   shape: string[];
 }
 
-
-
 function nTimesDo(n: number) {
   return Array.from(Array(n));
 }
-
 
 export function buildHeader(size: number) {
   return nTimesDo(size).map((_, i) => ALPHABET[i]);
@@ -125,10 +122,6 @@ export function shapeWithOffset(shape: string[], size: number) {
 
   return result;
 }
-
-// export function getSafeAreaFromBug(bug: Bug) {
-//
-// }
 
 export function generateBugs({ bugsSeed, possibleCells, fieldSize }: BugGenerationArgs): Bug[] {
   const bugs: Bug[] = [];

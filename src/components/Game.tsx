@@ -100,13 +100,12 @@ export function Game({ gameType, onEnd }: Props) {
         dispatchByUser({ type: ActionKind.DISCOVER, payload: shapeWithOffset(bug.shape, fieldSize) });
       }
     } else {
-      let randomCell;
+      let randomCell: string;
       do {
         randomCell = randomAvailableCell(Object.keys(cells), computerActions);
         dispatchByComputer({ type: ActionKind.HIT, payload: randomCell });
         const bug = userBugs.find((bug) => bug.shape.includes(randomCell));
         if (bug && bugDiscovered(bug, [...computerActions, randomCell])) {
-          console.log("bug discvoereed by computeer", randomCell);
           dispatchByComputer({ type: ActionKind.DISCOVER, payload: shapeWithOffset(bug.shape, fieldSize) });
         }
       } while (hitUserBug(randomCell));
@@ -116,13 +115,13 @@ export function Game({ gameType, onEnd }: Props) {
   useEffect(() => {
     let winner;
     if (userBugs.every((bug) => bugDiscovered(bug, computerActions))) {
-      winner = 'computer';
+      winner = 'Computer';
     } else if (computerBugs.every((bug) => bugDiscovered(bug, userActions))) {
-      winner = 'user';
+      winner = 'User';
     }
 
     if (winner) {
-      const res = confirm(`${winner} found bugs faster. Want to try one more game?`);
+      const res = confirm(`${winner} found bugs faster. \n Do you want to try one more game?`);
       if (res) onEnd();
     }
   }, [computerActions, userActions]);

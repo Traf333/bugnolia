@@ -6,7 +6,7 @@ type Props = {
 }
 
 export function FieldCell({ onClick, withBug, cell, revealed }: Props) {
-  const cellClass = `h-8 w-8 bg-emerald-500 hover:bg-emerald-700 border relative text-transparent hover:text-white ${revealed || !onClick ? 'cursor-default' : 'cursor-zoom-in'}`
+  const cellClass = `h-8 w-8 bg-emerald-500 hover:bg-emerald-700 border relative text-transparent hover:text-white ${revealed || !onClick ? 'cursor-default' : 'cursor-zoom-in'}`;
   const cellContentClass = revealed
     ? 'absolute text-green-800 text-5xl leading-[20px] left-[1px] top-[1px]'
     : 'absolute w-full text-center top-0 left-0 text-xl';
