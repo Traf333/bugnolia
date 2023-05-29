@@ -4,7 +4,7 @@ import { FieldCell } from './FieldCell';
 
 type Props = {
   size: number;
-  cells: Record<string, boolean>;
+  cells: string[];
   bugs: Bug[];
   revealedCells: string[];
   onCellClick?: (cell: string) => void;
@@ -12,7 +12,7 @@ type Props = {
 
 export function Field({ size, cells, bugs, revealedCells, onCellClick }: Props) {
   const header = buildHeader(size);
-  const groupedCells = group(Object.keys(cells), size);
+  const groupedCells = group(cells, size);
 
   const withinBug = (cell: string) => bugs.some((bug) => bug.shape.includes(cell));
 

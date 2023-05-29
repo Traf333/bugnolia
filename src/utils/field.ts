@@ -27,10 +27,10 @@ export function buildHeader(size: number) {
 }
 
 export function generateCells(size: number) {
-  const cells: Record<string, boolean> = {};
+  const cells: string[] = [];
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
-      cells[`${ALPHABET[j]}${i + 1}`] = false;
+      cells.push(`${ALPHABET[j]}${i + 1}`);
     }
   }
   return cells;
@@ -125,7 +125,7 @@ export function shapeWithOffset(shape: string[], size: number) {
 
 export function generateBugs({ bugsSeed, possibleCells, fieldSize }: BugGenerationArgs): Bug[] {
   const bugs: Bug[] = [];
-  let availableCells = Object.keys(possibleCells);
+  let availableCells = [...possibleCells];
 
   Object.entries(bugsSeed).forEach(([type, size]) => {
     nTimesDo(size).forEach(() => {

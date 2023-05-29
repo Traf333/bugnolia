@@ -45,7 +45,6 @@ type Action = {
 
 type State = string[]
 
-
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case ActionKind.HIT: {
@@ -102,7 +101,7 @@ export function Game({ gameType, onEnd }: Props) {
     } else {
       let randomCell: string;
       do {
-        randomCell = randomAvailableCell(Object.keys(cells), computerActions);
+        randomCell = randomAvailableCell(cells, computerActions);
         dispatchByComputer({ type: ActionKind.HIT, payload: randomCell });
         const bug = userBugs.find((bug) => bug.shape.includes(randomCell));
         if (bug && bugDiscovered(bug, [...computerActions, randomCell])) {

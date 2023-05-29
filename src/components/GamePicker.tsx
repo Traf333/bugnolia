@@ -13,7 +13,7 @@ type Props = {
 
 export function GamePicker({ onChange }: Props) {
   return (
-    <div>
+    <div className="p-4">
       <h3 className="mb-5 text-lg font-medium text-gray-900">
         Pick a game you'd like to play
       </h3>
