@@ -128,8 +128,8 @@ export function Game({ gameType, onEnd }: Props) {
 
   return (
     <div>
-      <div className="flex justify-between gap-10 mt-12">
-        <div>
+      <div className="flex flex-col md:flex-row md:justify-between gap-10 mt-12">
+        <div className="overflow-x-auto max-w-[90vw] md:overflow-hidden md:max-w-max">
           <Field
             size={fieldSize}
             cells={cells}
@@ -138,7 +138,7 @@ export function Game({ gameType, onEnd }: Props) {
           />
           <h3>Your Field</h3>
         </div>
-        <div>
+        <div className="overflow-x-auto max-w-[90vw] md:overflow-hidden md:max-w-max">
           <Field
             size={fieldSize}
             cells={cells}

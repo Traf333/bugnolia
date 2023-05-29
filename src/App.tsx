@@ -35,8 +35,9 @@ function App() {
       </figure>
     </div>
   );
+
   return (
-    <div>
+    <div className="md:p-8">
       <h1 className="mb-8">Bugnolia</h1>
       <h3>Let's help a colleague to find a bug</h3>
       <Game gameType={selectedGame!} onEnd={reset} />
