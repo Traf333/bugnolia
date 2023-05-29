@@ -15,7 +15,7 @@ export function GamePicker({ onChange }: Props) {
   return (
     <div>
       <h3 className="mb-5 text-lg font-medium text-gray-900">
-        Pick a game you'd like
+        Pick a game you'd like to play
       </h3>
       <ul className="grid w-full gap-6 md:grid-cols-3">
         {GAMES.map((game) => (

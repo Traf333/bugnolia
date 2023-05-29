@@ -1,5 +1,7 @@
-import { generateBugs, generateCells } from '../utils/field';
+import { useEffect, useMemo, useReducer } from 'react';
+import { Bug, generateBugs, generateCells, shapeWithOffset } from '../utils/field';
 import { Field } from './Field';
+import { random } from '../utils/collection.ts';
 
 const gameTypes = {
   quick: {
@@ -25,34 +27,126 @@ const gameTypes = {
 export type GameType = keyof typeof gameTypes
 
 type Props = {
-  gameType: GameType
+  gameType: GameType;
+  onEnd: () => void;
 }
 
-export function Game({ gameType }: Props) {
-  const { big, medium, small, fieldSize } = gameTypes[gameType];
-  const cells = generateCells(fieldSize);
+enum ActionKind {
+  HIT = 'HIT',
+  DISCOVER = 'DISCOVER',
+}
 
-  const bugs = generateBugs({
-    bugsSeed: { big, medium, small },
-    possibleCells: cells,
-    fieldSize,
-  });
+type HitPayload = string;
+type DiscoverPayload = string[]
+type Action = {
+  type: ActionKind;
+  payload: HitPayload | DiscoverPayload;
+}
 
-  const partnersBugs = generateBugs({
-    bugsSeed: { big, medium, small },
-    possibleCells: cells,
-    fieldSize,
-  });
+type State = string[]
+
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case ActionKind.HIT: {
+      return [...state, action.payload as HitPayload];
+    }
+    case ActionKind.DISCOVER: {
+      return [...state, ...action.payload as DiscoverPayload];
+    }
+    default:
+      return state;
+  }
+}
+
+export function Game({ gameType, onEnd }: Props) {
+  const [userActions, dispatchByUser] = useReducer(reducer, []);
+  const [computerActions, dispatchByComputer] = useReducer(reducer, []);
+
+  const {
+    fieldSize, cells, userBugs, computerBugs,
+  } = useMemo(() => {
+    const { big, medium, small, fieldSize } = gameTypes[gameType];
+    const cells = generateCells(fieldSize);
+
+    const bugs = generateBugs({
+      bugsSeed: { big, medium, small },
+      possibleCells: cells,
+      fieldSize,
+    });
+
+    const partnersBugs = generateBugs({
+      bugsSeed: { big, medium, small },
+      possibleCells: cells,
+      fieldSize,
+    });
+    return { fieldSize, cells, userBugs: bugs, computerBugs: partnersBugs };
+  }, []);
+
+  const randomAvailableCell = (collection: string[], revealedCells: string[]) => (
+    random(collection.filter((c) => !revealedCells.includes(c)))
+  );
+
+  const hitUserBug = (cell: string) => userBugs.some((bug) => bug.shape.includes(cell));
+  const hitComputerBug = (cell: string) => computerBugs.some((bug) => bug.shape.includes(cell));
+  const bugDiscovered = (bug: Bug, revealedCells: string[]) => bug.shape.every((cell) => revealedCells.includes(cell));
+  const handleCellClick = (cell: string) => {
+    dispatchByUser({ type: ActionKind.HIT, payload: cell });
+    // if user hit we check if the bug was discovered to cleanup space around,
+    // otherwise action goes to computer side
+    if (hitComputerBug(cell)) {
+      const bug = computerBugs.find((bug) => bug.shape.includes(cell));
+      if (bug && bugDiscovered(bug, [...userActions, cell])) {
+        dispatchByUser({ type: ActionKind.DISCOVER, payload: shapeWithOffset(bug.shape, fieldSize) });
+      }
+    } else {
+      let randomCell;
+      do {
+        randomCell = randomAvailableCell(Object.keys(cells), computerActions);
+        dispatchByComputer({ type: ActionKind.HIT, payload: randomCell });
+        const bug = userBugs.find((bug) => bug.shape.includes(randomCell));
+        if (bug && bugDiscovered(bug, [...computerActions, randomCell])) {
+          console.log("bug discvoereed by computeer", randomCell);
+          dispatchByComputer({ type: ActionKind.DISCOVER, payload: shapeWithOffset(bug.shape, fieldSize) });
+        }
+      } while (hitUserBug(randomCell));
+    }
+  };
+
+  useEffect(() => {
+    let winner;
+    if (userBugs.every((bug) => bugDiscovered(bug, computerActions))) {
+      winner = 'computer';
+    } else if (computerBugs.every((bug) => bugDiscovered(bug, userActions))) {
+      winner = 'user';
+    }
+
+    if (winner) {
+      const res = confirm(`${winner} found bugs faster. Want to try one more game?`);
+      if (res) onEnd();
+    }
+  }, [computerActions, userActions]);
 
   return (
     <div>
       <div className="flex justify-between gap-10 mt-12">
         <div>
-          <Field size={fieldSize} owner cells={cells} bugs={bugs} />
+          <Field
+            size={fieldSize}
+            cells={cells}
+            bugs={userBugs}
+            revealedCells={computerActions}
+          />
           <h3>Your Field</h3>
         </div>
         <div>
-          <Field size={fieldSize} cells={cells} bugs={partnersBugs} />
+          <Field
+            size={fieldSize}
+            cells={cells}
+            bugs={computerBugs}
+            revealedCells={userActions}
+            onCellClick={handleCellClick}
+          />
           <h3>Colleague's Field <br /> <small>(beta version: computer only)</small></h3>
         </div>
       </div>

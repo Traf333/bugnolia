@@ -1,49 +1,20 @@
 import { Bug, buildHeader } from '../utils/field';
-import { group, random } from '../utils/collection';
-import { useEffect, useState } from 'react';
-import { FieldCell } from './FieldCell.tsx';
+import { group } from '../utils/collection';
+import { FieldCell } from './FieldCell';
 
 type Props = {
   size: number;
   cells: Record<string, boolean>;
-  bugs: Bug[]
-  owner?: boolean;
+  bugs: Bug[];
+  revealedCells: string[];
+  onCellClick?: (cell: string) => void;
 }
 
-
-
-
-export function Field({ size, owner, cells, bugs }: Props) {
-  const [revealedCells, setRevealedCells] = useState<string[]>([]);
+export function Field({ size, cells, bugs, revealedCells, onCellClick }: Props) {
   const header = buildHeader(size);
   const groupedCells = group(Object.keys(cells), size);
 
   const withinBug = (cell: string) => bugs.some((bug) => bug.shape.includes(cell));
-  const handleComputerAction = (event: CustomEvent) => {
-    setRevealedCells([...revealedCells, event.detail]);
-  };
-  const handleClick = (cell: string) => {
-    if (owner || revealedCells.includes(cell)) return;
-
-    setRevealedCells([...revealedCells, cell]);
-
-    // if you've missed, the computer action will be triggered
-    if (!withinBug(cell)) {
-      const randomCell = random(Object.keys(cells).filter((c) => !revealedCells.includes(c)));
-      const event = new CustomEvent('computer-action', { detail: randomCell });
-      window.document.dispatchEvent(event);
-    }
-  };
-
-  useEffect(() => {
-    if (!owner) return;
-    window.document.addEventListener('computer-action', handleComputerAction);
-
-    return () => {
-      window.document.removeEventListener('computer-action', handleComputerAction);
-    };
-  }, [revealedCells]);
-
 
   return (
     <table className="select-none">
@@ -60,11 +31,10 @@ export function Field({ size, owner, cells, bugs }: Props) {
             {row.map((cell) => (
               <FieldCell
                 key={cell}
-                onClick={() => handleClick(cell)}
+                onClick={onCellClick}
                 withBug={withinBug(cell)}
                 cell={cell}
                 revealed={revealedCells.includes(cell)}
-                owner={owner}
               />
             ))}
           </tr>

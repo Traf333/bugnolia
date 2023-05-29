@@ -1,13 +1,12 @@
 type Props = {
-  onClick: () => void;
   withBug: boolean;
   cell: string;
   revealed: boolean;
-  owner?: boolean;
+  onClick?: (cell: string) => void;
 }
 
-export function FieldCell({ onClick, withBug, cell, revealed, owner }: Props) {
-  const cellClass = `h-8 w-8 bg-emerald-500 hover:bg-emerald-700 border relative text-transparent hover:text-white ${revealed || owner ? 'cursor-default' : 'cursor-zoom-in'}`
+export function FieldCell({ onClick, withBug, cell, revealed }: Props) {
+  const cellClass = `h-8 w-8 bg-emerald-500 hover:bg-emerald-700 border relative text-transparent hover:text-white ${revealed || !onClick ? 'cursor-default' : 'cursor-zoom-in'}`
   const cellContentClass = revealed
     ? 'absolute text-green-800 text-5xl leading-[20px] left-[1px] top-[1px]'
     : 'absolute w-full text-center top-0 left-0 text-xl';
@@ -15,10 +14,10 @@ export function FieldCell({ onClick, withBug, cell, revealed, owner }: Props) {
   return (
     <td
       className={cellClass}
-      onClick={onClick}
+      onClick={revealed ? undefined : () => onClick?.(cell)}
     >
-      {withBug && (owner || revealed) && (
-        <div className="bg-red-600 rounded-full h-full leading-7">{cell}</div>
+      {withBug && (!onClick || revealed) && (
+        <div className="bg-red-600 rounded-full h-full leading-7" />
       )}
       <span className={cellContentClass}>
         {revealed ? '×' : cell}

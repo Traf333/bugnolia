@@ -94,7 +94,7 @@ export function buildBug(size: number, bounds: string[], fieldSize: number) {
   return shape;
 }
 
-function shapeWithOffset(shape: string[], size: number) {
+export function shapeWithOffset(shape: string[], size: number) {
   const rowChars = nTimesDo(size).map((_, i) => (i + 1).toString());
 
   const result: string[] = [];
@@ -125,6 +125,10 @@ function shapeWithOffset(shape: string[], size: number) {
 
   return result;
 }
+
+// export function getSafeAreaFromBug(bug: Bug) {
+//
+// }
 
 export function generateBugs({ bugsSeed, possibleCells, fieldSize }: BugGenerationArgs): Bug[] {
   const bugs: Bug[] = [];
